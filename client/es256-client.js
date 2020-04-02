@@ -84,7 +84,8 @@ async function signMessage(encodedMessage, privateKey) {
 
 
 function showSignature(signature) {
-    const strSignature = ab2str(signature);
+    const derSignature = _P1363ToDer(signature);
+    const strSignature = ab2str(derSignature);
     const base64Signature = btoa(strSignature);
     signatureInput.value = base64Signature;
 }
@@ -112,4 +113,19 @@ function str2ab(str) {
         bufView[i] = str.charCodeAt(i);
     }
     return buf;
+}
+
+function _P1363ToDer(sig) {
+    const signatureArray = new Uint8Array(sig);
+    const signature = Array.from(signatureArray, x => ('00' + x.toString(16)).slice(-2)).join('');
+    let r = signature.substr(0, signature.length / 2);
+    let s = signature.substr(signature.length / 2);
+    r = r.replace(/^(00)+/, '');
+    s = s.replace(/^(00)+/, '');
+    if ((parseInt(r, 16) & '0x80') > 0) r = `00${r}`;
+    if ((parseInt(s, 16) & '0x80') > 0) s = `00${s}`;
+    const rString = `02${(r.length / 2).toString(16).padStart(2, '0')}${r}`;
+    const sString = `02${(s.length / 2).toString(16).padStart(2, '0')}${s}`;
+    const derSig = `30${((rString.length + sString.length) / 2).toString(16).padStart(2, '0')}${rString}${sString}`;
+    return new Uint8Array(derSig.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
 }

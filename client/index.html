@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES256</title>
+    <style>
+        input{
+            border: 1px solid black;
+            display: block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <textarea name="message" id="message" cols="30" rows="10" placeholder="Enter message"></textarea>
+    <small style="display: none;" id="error">Please enter a message to sign</small>
+    <div>
+        <button id="sign_button">
+            Sign
+        </button>
+        <button id="verify_button">
+            Verify
+        </button>
+    </div>
+    <div>
+        <label for="signature">Signature</label>
+        <input type="text" id="signature">
+        <label for="public_key">Public Key</label>
+        <input type="text" id="public_key">
+    </div>
+    <script src="es256-client.js"></script>
+</body>
+</html>

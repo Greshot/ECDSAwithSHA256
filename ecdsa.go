@@ -61,11 +61,11 @@ func getEcdsaPublicKey(publicKeyValue string) (*ecdsa.PublicKey, error) {
 }
 
 func main() {
-	pub := "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE+DMDr6gCZghvBQT4Xp+0gwuzAOCYIGLkb8DArf9U6e2nLdxmRweO/dAoBbhZCKrIty+HlQq3bdGvH6G0SfykKA=="
-	text := "message"
+	pub := "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEXldnFlPj+csEDSavdHMfksRN701h7ThJ8OdIDxOkQpiDwbrNVkxiETgCDv5erLoq/4EZLEKG40umAna6KTTsHw=="
+	text := "AC513af03f3228f1e8558cebba01dc0b3eIS0fc704bd7366ad0eacf2f3d5d17bae7aYE2feb7974c17eb780ba378a756aba8e9fYF03605763dd8897ee2bf7dab423f52e92YC036cbec9257bb962a0baba8cc444b7922020-03-05T19:11:23Z2020-03-05T19:11:23Zpending{\"message\": \"test\"}"
 	// MEYCIQD9Q9h9DxbbwtneFCpPCH9O4SX8oNPush0emvN0A6mKvAIhANs+sGfOY6OaY9Fw74V3eNVJFmWBjyD+/4niFtxF/14c
 	// PZPu4jyNoK8y/4tVofAgYnwD3dWpz2S+4Y+1NAuuHstrFqjBH5OP4/vqoX4vtT2zrHLZFI0c/E9kX9y16Wntsg==
-	signature := "vLU3n3tYu6agfm9vh4LhOG7qAQ4RFAICUUmWxuR4gCZ7qce+a8u1ccabzU92ORYIAGYzT1aEC3kofQjPdX6M2g=="
+	signature := "MEUCIHZEw7ya74G6CfkpCzQPDsfQt++xTdmyfm0Kk6CloTgJAiEAtuBZgld/NZAuZOEegQVOCqfcnyBtKY9cmDOnXmLGOe8="
 	result, err := IsValidSignature(pub, text, signature)
 	if err != nil {
 		panic(err)

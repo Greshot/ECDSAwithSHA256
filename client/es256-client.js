@@ -84,8 +84,8 @@ async function signMessage(encodedMessage, privateKey) {
 
 
 function showSignature(signature) {
-    const derSignature = _P1363ToDer(signature);
-    const strSignature = ab2str(derSignature);
+    const derHexSignature = _P1363ToDer(signature);
+    const strSignature = hexToStr(derHexSignature);
     const base64Signature = btoa(strSignature);
     signatureInput.value = base64Signature;
 }
@@ -115,17 +115,40 @@ function str2ab(str) {
     return buf;
 }
 
+function hexToStr(str) {
+    return str.match(/\w{2}/g).map(function (a) {
+        return String.fromCharCode(parseInt(a, 16));
+    }).join("");
+}
+
 function _P1363ToDer(sig) {
-    const signatureArray = new Uint8Array(sig);
-    const signature = Array.from(signatureArray, x => ('00' + x.toString(16)).slice(-2)).join('');
-    let r = signature.substr(0, signature.length / 2);
-    let s = signature.substr(signature.length / 2);
-    r = r.replace(/^(00)+/, '');
-    s = s.replace(/^(00)+/, '');
-    if ((parseInt(r, 16) & '0x80') > 0) r = `00${r}`;
-    if ((parseInt(s, 16) & '0x80') > 0) s = `00${s}`;
-    const rString = `02${(r.length / 2).toString(16).padStart(2, '0')}${r}`;
-    const sString = `02${(s.length / 2).toString(16).padStart(2, '0')}${s}`;
-    const derSig = `30${((rString.length + sString.length) / 2).toString(16).padStart(2, '0')}${rString}${sString}`;
-    return new Uint8Array(derSig.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
+    const signatureArrayBuffer = new Uint8Array(sig);
+    // Extract r & s and format it in ASN1 format.
+    const signHex = Array.from(signatureArrayBuffer, x => ('00' + x.toString(16)).slice(-2)).join('');
+    let r = signHex.substring(0, signHex.length / 2);
+    let s = signHex.substring(signHex.length / 2);
+    let rPre = true;
+    let sPre = true;
+    while (r.indexOf('00') === 0) {
+        r = r.substring(2);
+        rPre = false;
+    }
+    if (rPre && parseInt(r.substring(0, 2), 16) > 127) {
+        r = '00' + r;
+    }
+    while (s.indexOf('00') === 0) {
+        s = s.substring(2);
+        sPre = false;
+    }
+    if (sPre && parseInt(s.substring(0, 2), 16) > 127) {
+        s = '00' + s;
+    }
+    const payload = '02' + length(r) + r + '02' + length(s) + s;
+    const der = '30' + length(payload) + payload;
+
+    return der;
+}
+
+function length(hex) {
+    return ('00' + (hex.length / 2).toString(16)).slice(-2).toString();
 }

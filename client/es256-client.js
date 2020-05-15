@@ -41,7 +41,7 @@ verifyButton.addEventListener('click', async () => {
                 hash: { name: "SHA-256" },
             },
             cryptoPublicKey,
-            str2ab(atob(signatureInput.value)),
+            _DerToP1363(str2ab(atob(signatureInput.value))),
             str2ab(message.value)
         );
 
@@ -147,6 +147,18 @@ function _P1363ToDer(sig) {
     const der = '30' + length(payload) + payload;
 
     return der;
+}
+
+function _DerToP1363(sig) {
+    const derArrayBuffer = new Uint8Array(sig);
+    const signature = Array.from(derArrayBuffer, x => ('00' + x.toString(16)).slice(-2)).join('');
+    const rLength = parseInt(signature.substr(6, 2), 16) * 2;
+    let r = signature.substr(8, rLength);
+    let s = signature.substr(12 + rLength);
+    r = r.length > 64 ? r.substr(-64) : r.padStart(64, '0');
+    s = s.length > 64 ? s.substr(-64) : s.padStart(64, '0');
+    const p1363Sig = `${r}${s}`;
+    return new Uint8Array(p1363Sig.match(/[\da-f]{2}/gi).map(h => parseInt(h, 16)));
 }
 
 function length(hex) {
